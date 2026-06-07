@@ -1,0 +1,83 @@
+{% extends 'accounts/base.html' %}
+{% block content %}
+<div class="container mt-4" style="max-width:800px">
+  <h2>Résultats médicaux — {{ rdv.etudiant.get_full_name }}</h2>
+  <p class="text-muted">{{ rdv.creneau.date }} | {{ rdv.creneau.heure_debut }} – {{ rdv.creneau.heure_fin }}</p>
+
+  <form method="post">
+    {% csrf_token %}
+
+    <h5 class="mt-4">Constantes</h5>
+    <div class="row g-3">
+      <div class="col-md-3">
+        <label class="form-label">Tension artérielle</label>
+        {{ form.tension_arterielle }}
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Poids (kg)</label>
+        {{ form.poids }}
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Taille (cm)</label>
+        {{ form.taille }}
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Glycémie (g/L)</label>
+        {{ form.glycemie }}
+      </div>
+    </div>
+
+    <h5 class="mt-4">Tests rapides (TDR)</h5>
+    <div class="row g-3">
+      <div class="col-md-3">
+        <label class="form-label">Paludisme</label>
+        {{ form.tdr_paludisme }}
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Typhoïde</label>
+        {{ form.tdr_typhoide }}
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">VIH</label>
+        {{ form.tdr_vih }}
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Autre test</label>
+        {{ form.tdr_autre }}
+        {{ form.tdr_autre_resultat }}
+      </div>
+    </div>
+
+    <h5 class="mt-4">Analyses</h5>
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Analyse des selles</label>
+        {{ form.analyse_selles }}
+        {{ form.analyse_selles_detail }}
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Test urinaire</label>
+        {{ form.test_urinaire }}
+        {{ form.test_urinaire_detail }}
+      </div>
+    </div>
+
+    <h5 class="mt-4">Conclusion</h5>
+    <div class="mb-3">
+      <label class="form-label">Observations</label>
+      {{ form.observations }}
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Recommandations</label>
+      {{ form.recommandations }}
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Statut d'aptitude</label>
+      {{ form.statut_aptitude }}
+    </div>
+
+    <button type="submit" class="btn btn-primary">Enregistrer</button>
+    <a href="{% url 'resultats:rdv_du_jour' %}" class="btn btn-secondary">Retour</a>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends 'accounts/base.html' %}
+{% block title %}Périodes de visite{% endblock %}
+{% block page_title %}Périodes de visite médicale{% endblock %}
+{% block content %}
+
+{% if messages %}
+  {% for msg in messages %}
+    <div class="alert alert-{{ msg.tags }}">{{ msg }}</div>
+  {% endfor %}
+{% endif %}
+
+{% if periodes_data %}
+  {% for item in periodes_data %}
+  <div class="card mb-3">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <strong>{{ item.periode.titre }}</strong>
+      <span class="badge {% if item.periode.statut == 'en_cours' %}bg-success{% else %}bg-secondary{% endif %}">
+        {{ item.periode.get_statut_display }}
+      </span>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-4">
+          <p><strong>Département :</strong> {{ item.periode.departement }}</p>
+          <p><strong>Du :</strong> {{ item.periode.date_debut }} <strong>au</strong> {{ item.periode.date_fin }}</p>
+          <p><strong>Horaires :</strong> {{ item.periode.heure_debut }} – {{ item.periode.heure_fin }}</p>
+        </div>
+        <div class="col-md-4">
+          <p><strong>Médecin :</strong> {{ item.periode.medecin.get_full_name|default:"Non assigné" }}</p>
+          <p><strong>Capacité/créneau :</strong> {{ item.periode.capacite_par_creneau }} étudiants</p>
+        </div>
+        <div class="col-md-4 text-end">
+          {% if item.rdv %}
+            <div class="alert alert-success p-2">
+              <small>RDV confirmé</small><br>
+              <strong>{{ item.rdv.creneau.date }}</strong><br>
+              {{ item.rdv.creneau.heure_debut }} – {{ item.rdv.creneau.heure_fin }}
+            </div>
+            <form method="post" action="{% url 'rendezvous:annuler_rdv' item.rdv.pk %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-sm btn-outline-danger">Annuler</button>
+            </form>
+          {% else %}
+            <a href="#creneaux-{{ item.periode.pk }}" class="btn btn-primary" data-bs-toggle="collapse">
+              Choisir un créneau
+            </a>
+          {% endif %}
+        </div>
+      </div>
+
+      {% if not item.rdv %}
+      <div class="collapse mt-3" id="creneaux-{{ item.periode.pk }}">
+        <h6>Créneaux disponibles</h6>
+        <div class="row g-2">
+          {% for creneau in item.periode.creneaux.all %}
+            {% if creneau.est_disponible %}
+            <div class="col-md-3">
+              <div class="card border-success text-center p-2">
+                <small><strong>{{ creneau.date }}</strong></small>
+                <small>{{ creneau.heure_debut }} – {{ creneau.heure_fin }}</small>
+                <small class="text-muted">{{ creneau.places_restantes }} place(s)</small>
+                <a href="{% url 'rendezvous:prendre_rdv' creneau.pk %}" class="btn btn-sm btn-success mt-1">
+                  Réserver
+                </a>
+              </div>
+            </div>
+            {% endif %}
+          {% empty %}
+            <p class="text-muted">Aucun créneau disponible.</p>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+{% else %}
+  <div class="alert alert-info">Aucune période de visite disponible pour votre département.</div>
+{% endif %}
+
+{% endblock %}

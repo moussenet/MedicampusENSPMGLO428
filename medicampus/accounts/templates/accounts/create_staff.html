@@ -1,0 +1,112 @@
+{% extends 'accounts/base.html' %}
+{% load static %}
+
+{% block title %}Créer un compte{% endblock %}
+{% block page_title %}Créer un compte{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="card">
+      <div class="card-header">
+        <i class="bi bi-person-plus me-2"></i>Nouveau compte administrateur ou médecin
+      </div>
+      <div class="card-body p-4">
+
+        <form method="POST" novalidate id="staffForm">
+          {% csrf_token %}
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small text-uppercase">Nom <span class="text-danger">*</span></label>
+              <input type="text" name="last_name" class="form-control"
+                     value="{{ form.last_name.value|default:'' }}" placeholder="DUPONT"/>
+              {% if form.last_name.errors %}<div class="text-danger small mt-1">{{ form.last_name.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small text-uppercase">Prénom <span class="text-muted fw-normal">(optionnel)</span></label>
+              <input type="text" name="prenom" class="form-control"
+                     value="{{ form.prenom.value|default:'' }}" placeholder="Jean"/>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold small text-uppercase">Adresse email <span class="text-danger">*</span></label>
+            <input type="email" name="email" class="form-control"
+                   value="{{ form.email.value|default:'' }}" placeholder="jean.dupont@enspm.cm"/>
+            {% if form.email.errors %}<div class="text-danger small mt-1">{{ form.email.errors.0 }}</div>{% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold small text-uppercase">Rôle <span class="text-danger">*</span></label>
+            <select name="role" class="form-control" id="roleSelect" onchange="toggleCodeField()">
+              <option value="admin" {% if form.role.value == 'admin' %}selected{% endif %}>Administrateur</option>
+              <option value="medecin" {% if form.role.value == 'medecin' %}selected{% endif %}>Personnel médical</option>
+            </select>
+          </div>
+
+          <!-- Spécialité — visible si médecin -->
+          <div class="mb-3" id="specialiteField">
+            <label class="form-label fw-semibold small text-uppercase">Spécialité</label>
+            <input type="text" name="specialite" class="form-control"
+                   value="{{ form.specialite.value|default:'' }}" placeholder="Médecine générale"/>
+          </div>
+
+          <!-- Code ENSPM — visible si admin -->
+          <div class="mb-3" id="codeField">
+            <label class="form-label fw-semibold small text-uppercase">
+              Code de validation ENSPM <span class="text-danger">*</span>
+            </label>
+            <input type="text" name="code_enspm" class="form-control"
+                   value="{{ form.code_enspm.value|default:'' }}"
+                   placeholder="ENSPM-XXXXXXXX" style="font-family:monospace;"/>
+            <div class="form-text">Code fourni par la direction de l'ENSPM. Usage unique.</div>
+            {% if form.code_enspm.errors %}<div class="text-danger small mt-1">{{ form.code_enspm.errors.0 }}</div>{% endif %}
+          </div>
+
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small text-uppercase">Mot de passe temporaire <span class="text-danger">*</span></label>
+              <input type="password" name="password" class="form-control" placeholder="••••••••"/>
+              {% if form.password.errors %}<div class="text-danger small mt-1">{{ form.password.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small text-uppercase">Confirmer <span class="text-danger">*</span></label>
+              <input type="password" name="confirm_password" class="form-control" placeholder="••••••••"/>
+              {% if form.confirm_password.errors %}<div class="text-danger small mt-1">{{ form.confirm_password.errors.0 }}</div>{% endif %}
+            </div>
+          </div>
+
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-enspm px-4">
+              <i class="bi bi-check2 me-2"></i>Créer le compte
+            </button>
+            <a href="{% url 'accounts:superadmin_dashboard' %}" class="btn btn-outline-secondary px-4">
+              Annuler
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleCodeField() {
+  const role = document.getElementById('roleSelect').value;
+  document.getElementById('codeField').style.display      = role === 'admin'   ? 'block' : 'none';
+  document.getElementById('specialiteField').style.display = role === 'medecin' ? 'block' : 'none';
+}
+toggleCodeField();
+</script>
+
+{% block extra_css %}
+<style>
+  .form-label { font-size:.78rem; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:#0A1931; margin-bottom:6px; }
+  .form-control { border:1.5px solid #DDE3EE; border-radius:10px; padding:10px 14px; }
+  .form-control:focus { border-color:#1A4A8A; box-shadow:0 0 0 3px rgba(26,74,138,.1); }
+  .btn-enspm { background:#0A1931; color:#fff; border:none; border-radius:10px; font-weight:600; }
+  .btn-enspm:hover { background:#1A4A8A; color:#fff; }
+</style>
+{% endblock %}
+{% endblock %}

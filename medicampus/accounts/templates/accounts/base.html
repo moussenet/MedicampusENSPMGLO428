@@ -1,0 +1,256 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}MediCampus — ENSPM{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --navy:  #0A1931;
+      --blue:  #1A4A8A;
+      --green: #1B8A5A;
+      --light: #F4F7FB;
+      --border:#DDE3EE;
+      --text:  #1C2B40;
+      --muted: #6B7A90;
+    }
+    * { font-family: 'DM Sans', sans-serif; }
+    body { background: var(--light); color: var(--text); min-height: 100vh; }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 260px; min-height: 100vh;
+      background: var(--navy);
+      position: fixed; top: 0; left: 0; z-index: 100;
+      display: flex; flex-direction: column;
+    }
+    .sidebar-brand {
+      padding: 20px 18px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      display: flex; align-items: center; gap: 12px;
+    }
+    .sidebar-brand img {
+      width: 42px; height: 42px; object-fit: contain;
+      border-radius: 8px; background: #fff; padding: 3px; flex-shrink: 0;
+    }
+    .sidebar-brand .logo-fallback {
+      width: 42px; height: 42px; border-radius: 8px;
+      background: var(--blue); display: flex; align-items: center;
+      justify-content: center; color: #fff; font-weight: 700; font-size: 1rem;
+      flex-shrink: 0;
+    }
+    .brand-name { color: #fff; font-family: 'Playfair Display', serif; font-size: 1rem; line-height: 1.2; }
+    .brand-sub  { color: rgba(255,255,255,.45); font-size: .68rem; text-transform: uppercase; letter-spacing: .07em; }
+
+    .sidebar-nav { padding: 12px 0; flex: 1; overflow-y: auto; }
+    .nav-section {
+      padding: 10px 18px 4px;
+      font-size: .62rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .1em; color: rgba(255,255,255,.3);
+    }
+    .sidebar .nav-link {
+      padding: 9px 18px; color: rgba(255,255,255,.65);
+      display: flex; align-items: center; gap: 10px;
+      font-size: .875rem; transition: all .15s;
+      border-left: 3px solid transparent;
+    }
+    .sidebar .nav-link:hover { color: #fff; background: rgba(255,255,255,.07); }
+    .sidebar .nav-link.active { color: #fff; background: rgba(255,255,255,.09); border-left-color: var(--green); }
+    .sidebar .nav-link i { width: 18px; text-align: center; font-size: .95rem; }
+    .sidebar .nav-link.logout { color: #ff8080; }
+    .sidebar .nav-link.logout:hover { background: rgba(255,80,80,.1); color: #ff6060; }
+
+    /* ── Sidebar footer ── */
+    .sidebar-footer {
+      padding: 14px 18px;
+      border-top: 1px solid rgba(255,255,255,.08);
+    }
+    .user-chip { display: flex; align-items: center; gap: 10px; }
+    .user-avatar {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: var(--blue); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: .8rem; flex-shrink: 0;
+    }
+    .user-name { color: #fff; font-size: .83rem; font-weight: 600; }
+    .user-role { color: rgba(255,255,255,.4); font-size: .7rem; }
+
+    /* ── Topbar ── */
+    .main-content { margin-left: 260px; min-height: 100vh; display: flex; flex-direction: column; }
+    .topbar {
+      background: #fff; border-bottom: 1px solid var(--border);
+      padding: 13px 28px; display: flex; align-items: center;
+      justify-content: space-between; position: sticky; top: 0; z-index: 50;
+    }
+    .topbar-title { font-size: 1.05rem; font-weight: 600; color: var(--text); }
+    .page-body { padding: 24px 28px; flex: 1; }
+
+    /* ── Cards ── */
+    .card { border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.04); }
+    .card-header {
+      background: #fff; border-bottom: 1px solid var(--border);
+      padding: 14px 18px; border-radius: 12px 12px 0 0 !important; font-weight: 600;
+    }
+    .stat-card {
+      background: #fff; border: 1px solid var(--border); border-radius: 12px;
+      padding: 18px; display: flex; align-items: center; gap: 14px;
+    }
+    .stat-icon {
+      width: 46px; height: 46px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; flex-shrink: 0;
+    }
+    .stat-icon.blue  { background: #EBF2FF; color: var(--blue); }
+    .stat-icon.green { background: #E8F7F0; color: var(--green); }
+    .stat-icon.navy  { background: #E8EDF5; color: var(--navy); }
+    .stat-value { font-size: 1.5rem; font-weight: 700; line-height: 1; }
+    .stat-label { font-size: .78rem; color: var(--muted); margin-top: 2px; }
+
+    .badge-actif   { background: #E8F7F0; color: var(--green); }
+    .badge-inactif { background: #FEF0EE; color: #C0392B; }
+
+    .btn-enspm { background: var(--navy); color: #fff; border: none; border-radius: 8px; font-weight: 500; transition: background .2s; }
+    .btn-enspm:hover { background: var(--blue); color: #fff; }
+    .btn-green { background: var(--green); color: #fff; border: none; border-radius: 8px; font-weight: 500; }
+    .btn-green:hover { background: #157a4e; color: #fff; }
+
+    .alert { border-radius: 10px; border: none; font-size: .875rem; }
+    .table th { font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; border-bottom: 1px solid var(--border); }
+    .table td { font-size: .875rem; vertical-align: middle; }
+
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .main-content { margin-left: 0; }
+    }
+  </style>
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+{% if user.is_authenticated %}
+<!-- ═══ SIDEBAR ═══ -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    {% load static %}
+    <img src="{% static 'accounts/img/logo.jpg' %}" alt="ENSPM"
+         onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+    <div class="logo-fallback" style="display:none">E</div>
+    <div>
+      <div class="brand-name">MediCampus</div>
+      <div class="brand-sub">ENSPM Maroua</div>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+
+    {% if user.is_superadmin %}
+    <div class="nav-section">Administration</div>
+    <a href="{% url 'accounts:superadmin_dashboard' %}"
+       class="nav-link {% if request.resolver_match.url_name == 'superadmin_dashboard' %}active{% endif %}">
+      <i class="bi bi-grid-1x2"></i> Tableau de bord
+    </a>
+    <a href="{% url 'accounts:create_staff' %}"
+       class="nav-link {% if request.resolver_match.url_name == 'create_staff' %}active{% endif %}">
+      <i class="bi bi-person-plus"></i> Créer un compte
+    </a>
+    {% endif %}
+
+    {% if user.is_admin %}
+    <div class="nav-section">Administration</div>
+    <a href="{% url 'accounts:admin_dashboard' %}" class="nav-link active">
+      <i class="bi bi-grid-1x2"></i> Tableau de bord
+    </a>
+    <a href="{% url 'periodes:liste' %}" class="nav-link">
+  <i class="bi bi-calendar-range"></i> Périodes de visite
+</a>
+    {% endif %}
+
+    {% if user.is_medecin %}
+    <div class="nav-section">Médical</div>
+    <a href="{% url 'accounts:medecin_dashboard' %}" class="nav-link active">
+      <i class="bi bi-heart-pulse"></i> Tableau de bord
+    </a>
+    {% endif %}
+
+    {% if user.is_etudiant %}
+    <div class="nav-section">Espace étudiant</div>
+    <a href="{% url 'accounts:etudiant_dashboard' %}"
+       class="nav-link {% if request.resolver_match.url_name == 'etudiant_dashboard' %}active{% endif %}">
+      <i class="bi bi-grid-1x2"></i> Tableau de bord
+    </a>
+    <a href="{% url 'rendezvous:periodes_disponibles' %}"
+       class="nav-link {% if request.resolver_match.url_name == 'periodes_disponibles' %}active{% endif %}">
+      <i class="bi bi-calendar-plus"></i> Prendre un RDV
+    </a>
+    <a href="{% url 'rendezvous:mes_rendezvous' %}"
+       class="nav-link {% if request.resolver_match.url_name == 'mes_rendezvous' %}active{% endif %}">
+      <i class="bi bi-calendar-check"></i> Mes rendez-vous
+    </a>
+    {% endif %}
+
+    {% if not user.is_etudiant %}
+    <div class="nav-section" style="margin-top:8px;">Compte</div>
+    <a href="{% url 'accounts:change_password' %}"
+       class="nav-link {% if request.resolver_match.url_name == 'change_password' %}active{% endif %}">
+      <i class="bi bi-shield-lock"></i> Mot de passe
+    </a>
+    {% endif %}
+
+    <!-- ── Déconnexion bien visible ── -->
+    <a href="{% url 'accounts:logout' %}" class="nav-link logout"
+       onclick="return confirm('Se déconnecter ?')">
+      <i class="bi bi-box-arrow-left"></i> Déconnexion
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="user-chip">
+      <div class="user-avatar">{{ user.get_display_name|first|upper }}</div>
+      <div>
+        <div class="user-name">{{ user.get_display_name }}</div>
+        <div class="user-role">{{ user.get_role_display }}</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══ MAIN ═══ -->
+<div class="main-content">
+  <div class="topbar">
+    <span class="topbar-title">{% block page_title %}{% endblock %}</span>
+    <div class="d-flex align-items-center gap-2">
+      <span class="badge bg-light text-dark border small">{{ user.get_role_display }}</span>
+      <a href="{% url 'accounts:logout' %}" class="btn btn-sm btn-outline-danger"
+         onclick="return confirm('Se déconnecter ?')">
+        <i class="bi bi-box-arrow-left me-1"></i>Déconnexion
+      </a>
+    </div>
+  </div>
+
+  <div class="page-body">
+    {% if messages %}
+      {% for message in messages %}
+      <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show mb-3">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+      {% endfor %}
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </div>
+</div>
+
+{% else %}
+  {% block auth_content %}{% endblock %}
+{% endif %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

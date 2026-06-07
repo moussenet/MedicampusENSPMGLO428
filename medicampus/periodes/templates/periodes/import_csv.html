@@ -1,0 +1,121 @@
+{% extends 'accounts/base.html' %}
+{% block title %}Importer des étudiants{% endblock %}
+{% block page_title %}Importer des étudiants via CSV{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+
+    <!-- Info période -->
+    <div class="alert mb-4" style="background:#EBF2FF;border:none;border-radius:10px;color:#1A4A8A;">
+      <i class="bi bi-calendar3 me-2"></i>
+      <strong>{{ periode.titre }}</strong> —
+      {{ periode.date_debut|date:"d/m/Y" }} → {{ periode.date_fin|date:"d/m/Y" }}
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <i class="bi bi-upload me-2"></i>Import du fichier CSV
+      </div>
+      <div class="card-body p-4">
+
+        <form method="POST" enctype="multipart/form-data" novalidate>
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <label class="form-label-custom">Département <span class="text-danger">*</span></label>
+            <select name="departement"
+                    class="form-control-custom {% if form.departement.errors %}is-invalid{% endif %}">
+              {% for value, label in form.fields.departement.choices %}
+              <option value="{{ value }}" {% if form.departement.value == value %}selected{% endif %}>
+                {{ label }}
+              </option>
+              {% endfor %}
+            </select>
+            {% if form.departement.errors %}
+            <div class="text-danger small mt-1">{{ form.departement.errors.0 }}</div>
+            {% endif %}
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label-custom">Fichier CSV <span class="text-danger">*</span></label>
+            <div class="upload-zone" id="uploadZone"
+                 onclick="document.getElementById('csvInput').click()">
+              <i class="bi bi-cloud-upload" style="font-size:2rem;color:#1A4A8A;"></i>
+              <p class="mb-1 mt-2" style="font-weight:600;">Cliquez pour choisir un fichier</p>
+              <p class="text-muted mb-0" style="font-size:.8rem;" id="fileName">
+                Formats acceptés : .csv — Max 5 Mo
+              </p>
+            </div>
+            <input type="file" name="fichier_csv" id="csvInput" accept=".csv"
+                   class="d-none" onchange="showFileName(this)"/>
+            {% if form.fichier_csv.errors %}
+            <div class="text-danger small mt-1">{{ form.fichier_csv.errors.0 }}</div>
+            {% endif %}
+          </div>
+
+          <!-- Format attendu -->
+          <div class="mb-4 p-3" style="background:#F4F7FB;border-radius:10px;">
+            <p class="mb-2" style="font-size:.8rem;font-weight:600;color:#0A1931;">
+              <i class="bi bi-info-circle me-1"></i>Format attendu du fichier CSV :
+            </p>
+            <code style="font-size:.78rem;color:#1A4A8A;">
+              matricule,nom_complet,email<br/>
+              21B0001,MOUSSA Amadou,moussa@enspm.cm<br/>
+              21B0002,FATIMA Ali,fatima@enspm.cm
+            </code>
+            <p class="mt-2 mb-0 text-muted" style="font-size:.75rem;">
+              La colonne <strong>email</strong> est optionnelle.
+              Encodage : UTF-8.
+            </p>
+          </div>
+
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-enspm px-4">
+              <i class="bi bi-upload me-2"></i>Importer
+            </button>
+            <a href="{% url 'periodes:detail' periode.pk %}"
+               class="btn btn-outline-secondary px-4">Annuler</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% block extra_css %}
+<style>
+  .form-label-custom {
+    font-size:.78rem;font-weight:600;text-transform:uppercase;
+    letter-spacing:.05em;color:#0A1931;margin-bottom:6px;display:block;
+  }
+  .form-control-custom {
+    border:1.5px solid #DDE3EE;border-radius:10px;
+    padding:10px 14px;font-size:.9rem;width:100%;
+  }
+  .form-control-custom:focus { outline:none;border-color:#1A4A8A;box-shadow:0 0 0 3px rgba(26,74,138,.1); }
+  .upload-zone {
+    border:2px dashed #DDE3EE;border-radius:12px;padding:28px;
+    text-align:center;cursor:pointer;transition:border-color .2s,background .2s;
+  }
+  .upload-zone:hover { border-color:#1A4A8A;background:#F4F7FB; }
+  .upload-zone.active { border-color:#1B8A5A;background:#E8F7F0; }
+  .btn-enspm { background:#0A1931;color:#fff;border:none;border-radius:10px;font-weight:600; }
+  .btn-enspm:hover { background:#1A4A8A;color:#fff; }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function showFileName(input) {
+  const zone = document.getElementById('uploadZone');
+  const label = document.getElementById('fileName');
+  if (input.files && input.files[0]) {
+    label.textContent = '✓ ' + input.files[0].name;
+    zone.classList.add('active');
+  }
+}
+</script>
+{% endblock %}
+
+{% endblock %}

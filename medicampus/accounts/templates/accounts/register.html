@@ -1,0 +1,306 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Inscription — MediCampus ENSPM</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --navy: #0A1931; --blue: #1A4A8A; --green: #1B8A5A;
+      --light: #F4F7FB; --border: #DDE3EE; --muted: #6B7A90;
+    }
+    * { font-family: 'DM Sans', sans-serif; }
+    body { background: var(--light); min-height: 100vh; padding: 32px 16px; }
+    .register-card {
+      max-width: 680px; margin: 0 auto;
+      background: #fff; border-radius: 20px;
+      box-shadow: 0 8px 40px rgba(10,25,49,.1);
+      overflow: hidden;
+    }
+    .register-header {
+      background: var(--navy); padding: 28px 36px;
+      display: flex; align-items: center; gap: 16px;
+    }
+    .register-header img {
+      width: 56px; height: 56px; object-fit: contain;
+      background: #fff; border-radius: 10px; padding: 4px;
+    }
+    .register-header h1 {
+      font-family: 'Playfair Display', serif;
+      color: #fff; font-size: 1.3rem; margin: 0;
+    }
+    .register-header p { color: rgba(255,255,255,.5); font-size: .8rem; margin: 0; }
+    .register-body { padding: 36px; }
+    .section-label {
+      font-size: .7rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .1em; color: var(--green);
+      border-bottom: 2px solid #E8F7F0; padding-bottom: 6px; margin-bottom: 20px;
+    }
+    .form-label {
+      font-size: .8rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: .05em; color: var(--navy); margin-bottom: 6px;
+    }
+    .optional { color: var(--muted); font-weight: 400; font-size: .7rem; }
+    .form-control {
+      border: 1.5px solid var(--border); border-radius: 10px;
+      padding: 10px 14px; font-size: .9rem; transition: border-color .2s, box-shadow .2s;
+    }
+    .form-control:focus {
+      border-color: var(--blue); box-shadow: 0 0 0 3px rgba(26,74,138,.1);
+    }
+    .form-control.is-invalid { border-color: #dc3545; }
+    .password-strength { margin-top: 6px; }
+    .strength-bar {
+      height: 4px; border-radius: 2px; background: var(--border);
+      overflow: hidden; margin-bottom: 4px;
+    }
+    .strength-fill { height: 100%; border-radius: 2px; transition: width .3s, background .3s; width: 0; }
+    .strength-text { font-size: .75rem; color: var(--muted); }
+    .btn-register {
+      background: var(--navy); color: #fff; border: none;
+      border-radius: 10px; padding: 12px; font-weight: 600;
+      font-size: .95rem; width: 100%; transition: background .2s;
+    }
+    .btn-register:hover { background: var(--blue); color: #fff; }
+    .auth-link { text-align: center; margin-top: 16px; font-size: .875rem; color: var(--muted); }
+    .auth-link a { color: var(--blue); font-weight: 600; text-decoration: none; }
+    .alert { border-radius: 10px; border: none; font-size: .875rem; }
+    .input-group .form-control { border-right: none; }
+    .input-group .btn-outline-secondary {
+      border: 1.5px solid var(--border); border-left: none;
+      border-radius: 0 10px 10px 0; color: var(--muted); background: #fff;
+    }
+  </style>
+</head>
+<body>
+<div class="register-card">
+
+  <div class="register-header">
+    <img src="{% static 'accounts/img/logo.jpg' %}" alt="Logo ENSPM"/>
+    <div>
+      <h1>Créer un compte étudiant</h1>
+      <p>Medicampus — ENSPM Maroua</p>
+    </div>
+  </div>
+
+  <div class="register-body">
+
+    {% if messages %}
+      {% for message in messages %}
+      <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} mb-3">
+        {{ message }}
+      </div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="POST" novalidate>
+      {% csrf_token %}
+
+      <!-- Identité -->
+      <div class="section-label"><i class="bi bi-person me-2"></i>Identité</div>
+      <div class="row g-3 mb-4">
+        <div class="col-md-6">
+          <label class="form-label">Nom <span class="text-danger">*</span></label>
+          <input type="text" name="last_name" class="form-control {% if form.last_name.errors %}is-invalid{% endif %}"
+                 placeholder="" value="{{ form.last_name.value|default:'' }}"/>
+          {% if form.last_name.errors %}<div class="invalid-feedback">{{ form.last_name.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Prénom <span class="optional">(optionnel)</span></label>
+          <input type="text" name="prenom" class="form-control"
+                 placeholder="" value="{{ form.prenom.value|default:'' }}"/>
+        </div>
+      </div>
+
+      <!-- Informations académiques -->
+      <div class="section-label"><i class="bi bi-mortarboard me-2"></i>Informations académiques</div>
+      <div class="row g-3 mb-4">
+        <div class="col-md-6">
+          <label class="form-label">Matricule <span class="text-danger">*</span></label>
+          <input type="text" name="matricule" class="form-control {% if form.matricule.errors %}is-invalid{% endif %}"
+                 placeholder="ex:21B0123" value="{{ form.matricule.value|default:'' }}"/>
+          {% if form.matricule.errors %}<div class="invalid-feedback">{{ form.matricule.errors.0 }}</div>{% endif %}
+        </div>
+       <div class="col-md-6">
+  <label class="form-label">Département <span class="text-danger">*</span></label>
+  <select name="departement" class="form-control {% if form.departement.errors %}is-invalid{% endif %}">
+    <option value="">-- Choisir un département --</option>
+    <option value="GCA"   {% if form.departement.value == "GCA"   %}selected{% endif %}>Génie Civil et Architecture (GCA)</option>
+    <option value="AGEPD" {% if form.departement.value == "AGEPD" %}selected{% endif %}>Agriculture, Élevage et Produits Dérivés (AGEPD)</option>
+    <option value="INFOTEL" {% if form.departement.value == "INFOTEL" %}selected{% endif %}>Informatique et Télécommunications (INFOTEL)</option>
+    <option value="HYMAE" {% if form.departement.value == "HYMAE" %}selected{% endif %}>Hydraulique et Maîtrise des Eaux (HYMAE)</option>
+    <option value="SCIENV" {% if form.departement.value == "SCIENV" %}selected{% endif %}>Sciences Environnementales (SCIENV)</option>
+    <option value="AHN"   {% if form.departement.value == "AHN"   %}selected{% endif %}>Art et Humanité Numérique (AHN)</option>
+    <option value="ESB"   {% if form.departement.value == "ESB"   %}selected{% endif %}>Enseignement Scientifique de Base (ESB)</option>
+    <option value="GTC"   {% if form.departement.value == "GTC"   %}selected{% endif %}>Génie Textile et Cuir (GTC)</option>
+    <option value="ENREN" {% if form.departement.value == "ENREN" %}selected{% endif %}>Énergies Renouvelables (ENREN)</option>
+    <option value="MCHP"  {% if form.departement.value == "MCHP"  %}selected{% endif %}>Météorologie, Climatologie, Hydrologie, Pédologie (MCHP)</option>
+  </select>
+  {% if form.departement.errors %}<div class="invalid-feedback">{{ form.departement.errors.0 }}</div>{% endif %}
+</div>
+        <!-- Filière dynamique -->
+<div class="col-md-6">
+  <label class="form-label">Filière <span class="optional">(optionnel)</span></label>
+  <select name="filiere" id="filiereSelect" class="form-control">
+    <option value="">-- Choisir d'abord un département --</option>
+  </select>
+</div>
+
+      <!-- Connexion -->
+      <div class="section-label"><i class="bi bi-shield-lock me-2"></i>Accès au compte</div>
+      <div class="mb-3">
+        <label class="form-label">Adresse email <span class="text-danger">*</span></label>
+        <input type="email" name="email" class="form-control {% if form.email.errors %}is-invalid{% endif %}"
+               placeholder="votre@email.com" value="{{ form.email.value|default:'' }}"/>
+        {% if form.email.errors %}<div class="invalid-feedback">{{ form.email.errors.0 }}</div>{% endif %}
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Mot de passe <span class="text-danger">*</span></label>
+        <div class="input-group">
+          <input type="password" name="password" id="pwd1"
+                 class="form-control {% if form.password.errors %}is-invalid{% endif %}"
+                 placeholder="••••••••" oninput="checkStrength(this.value)"/>
+          <button class="btn btn-outline-secondary" type="button" onclick="togglePwd('pwd1','eye1')">
+            <i class="bi bi-eye" id="eye1"></i>
+          </button>
+        </div>
+        <div class="password-strength">
+          <div class="strength-bar"><div class="strength-fill" id="strengthBar"></div></div>
+          <span class="strength-text" id="strengthText">Minimum 8 car., 1 majuscule, 1 chiffre, 1 symbole</span>
+        </div>
+        {% if form.password.errors %}<div class="text-danger small mt-1">{{ form.password.errors.0 }}</div>{% endif %}
+      </div>
+
+      <div class="mb-4">
+        <label class="form-label">Confirmer le mot de passe <span class="text-danger">*</span></label>
+        <div class="input-group">
+          <input type="password" name="confirm_password" id="pwd2"
+                 class="form-control {% if form.confirm_password.errors %}is-invalid{% endif %}"
+                 placeholder="••••••••"/>
+          <button class="btn btn-outline-secondary" type="button" onclick="togglePwd('pwd2','eye2')">
+            <i class="bi bi-eye" id="eye2"></i>
+          </button>
+        </div>
+        {% if form.confirm_password.errors %}<div class="text-danger small mt-1">{{ form.confirm_password.errors.0 }}</div>{% endif %}
+      </div>
+
+      <button type="submit" class="btn btn-register">
+        <i class="bi bi-person-check me-2"></i>Créer mon compte
+      </button>
+    </form>
+
+    <div class="auth-link">
+      Déjà inscrit ? <a href="{% url 'accounts:login' %}">Se connecter</a>
+    </div>
+  </div>
+</div>
+
+<script>
+function togglePwd(id, iconId) {
+  const f = document.getElementById(id);
+  const i = document.getElementById(iconId);
+  f.type = f.type === 'password' ? 'text' : 'password';
+  i.className = f.type === 'password' ? 'bi bi-eye' : 'bi bi-eye-slash';
+}
+function checkStrength(val) {
+  let score = 0;
+  if (val.length >= 8) score++;
+  if (/[A-Z]/.test(val)) score++;
+  if (/[0-9]/.test(val)) score++;
+  if (/[\W]/.test(val)) score++;
+  const bar = document.getElementById('strengthBar');
+  const txt = document.getElementById('strengthText');
+  const colors = ['#dc3545','#fd7e14','#ffc107','#1B8A5A'];
+  const labels = ['Très faible','Moyen','Bien','Fort'];
+  bar.style.width = (score * 25) + '%';
+  bar.style.background = colors[score - 1] || '#DDE3EE';
+  txt.textContent = score > 0 ? labels[score - 1] : 'Minimum 8 car., 1 majuscule, 1 chiffre, 1 symbole';
+  txt.style.color = colors[score - 1] || '#6B7A90';
+}
+
+const FILIERES = {
+  GCA: [
+    "Génie Civil",
+    "Architecture et Habitat",
+    "Bâtiments et Travaux Publics",
+  ],
+  AGEPD: [
+    "Agriculture",
+    "Élevage",
+    "Produits Dérivés et Agro-industrie",
+  ],
+  INFOTEL: [
+    "Génie Logiciel (GLO)",
+    "Réseaux et Télécommunications",
+    "Systèmes Informatiques et Embarqués",
+  ],
+  HYMAE: [
+    "Hydraulique Urbaine",
+    "Maîtrise des Eaux et Irrigation",
+    "Hydrologie",
+  ],
+  SCIENV: [
+    "Génie de l'Environnement",
+    "Éducation Environnementale",
+    "Gestion des Ressources Naturelles",
+  ],
+  AHN: [
+    "Arts Numériques",
+    "Sciences du Patrimoine",
+    "Humanités Numériques",
+  ],
+  ESB: [
+    "Mathématiques et Sciences Physiques",
+    "Sciences de la Vie et de la Terre",
+  ],
+  GTC: [
+    "Technologie du Textile",
+    "Génie du Cuir",
+    "Traitement des Matériaux",
+  ],
+  ENREN: [
+    "Énergie Solaire",
+    "Énergie Éolienne",
+    "Systèmes Hybrides",
+  ],
+  MCHP: [
+    "Météorologie",
+    "Climatologie",
+    "Hydrologie",
+    "Pédologie",
+  ],
+};
+
+function updateFilieres() {
+  const dept    = document.getElementById('departementSelect').value;
+  const select  = document.getElementById('filiereSelect');
+  const current = "{{ form.filiere.value|default:'' }}";
+
+  select.innerHTML = '<option value="">-- Choisir une filière --</option>';
+
+  if (dept && FILIERES[dept]) {
+    FILIERES[dept].forEach(f => {
+      const opt = document.createElement('option');
+      opt.value = f;
+      opt.textContent = f;
+      if (f === current) opt.selected = true;
+      select.appendChild(opt);
+    });
+  }
+}
+
+// Initialise si retour de formulaire avec erreurs
+document.addEventListener('DOMContentLoaded', () => {
+  const dept = document.getElementById('departementSelect').value;
+  if (dept) updateFilieres();
+});
+
+</script>
+
+</body>
+</html>

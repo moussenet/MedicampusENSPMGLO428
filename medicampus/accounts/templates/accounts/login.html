@@ -1,0 +1,247 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Connexion — MediCampus ENSPM</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --navy:  #0A1931;
+      --blue:  #1A4A8A;
+      --green: #1B8A5A;
+      --light: #F4F7FB;
+      --border:#DDE3EE;
+      --muted: #6B7A90;
+    }
+    * { font-family: 'DM Sans', sans-serif; }
+    body {
+      background: var(--light);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .auth-wrapper {
+      display: flex;
+      width: 100%;
+      max-width: 900px;
+      min-height: 560px;
+      background: #fff;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 8px 40px rgba(10,25,49,.12);
+      margin: 20px;
+    }
+    .auth-panel {
+      flex: 1;
+      background: var(--navy);
+      padding: 48px 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+    .auth-panel::before {
+      content: '';
+      position: absolute;
+      width: 300px; height: 300px;
+      background: rgba(26,74,138,.35);
+      border-radius: 50%;
+      top: -80px; right: -80px;
+    }
+    .auth-panel::after {
+      content: '';
+      position: absolute;
+      width: 200px; height: 200px;
+      background: rgba(27,138,90,.2);
+      border-radius: 50%;
+      bottom: -40px; left: -40px;
+    }
+    .auth-panel img {
+      width: 90px; height: 90px;
+      object-fit: contain;
+      background: #fff;
+      border-radius: 16px;
+      padding: 8px;
+      margin-bottom: 20px;
+      position: relative; z-index: 1;
+    }
+    .auth-panel h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      text-align: center;
+      margin-bottom: 8px;
+      position: relative; z-index: 1;
+    }
+    .auth-panel p {
+      color: rgba(255,255,255,.55);
+      text-align: center;
+      font-size: .85rem;
+      line-height: 1.6;
+      position: relative; z-index: 1;
+    }
+    .auth-divider {
+      width: 40px; height: 3px;
+      background: var(--green);
+      border-radius: 2px;
+      margin: 16px auto;
+      position: relative; z-index: 1;
+    }
+    .auth-form-side {
+      flex: 1;
+      padding: 48px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .auth-form-side h3 {
+      font-weight: 700;
+      font-size: 1.4rem;
+      color: var(--navy);
+      margin-bottom: 6px;
+    }
+    .auth-form-side .subtitle {
+      color: var(--muted);
+      font-size: .875rem;
+      margin-bottom: 28px;
+    }
+    .form-label {
+      font-size: .8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: var(--navy);
+      margin-bottom: 6px;
+    }
+    .form-control {
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: .9rem;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .form-control:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(26,74,138,.1);
+    }
+    .input-group .form-control { border-right: none; }
+    .input-group .btn-outline-secondary {
+      border: 1.5px solid var(--border);
+      border-left: none;
+      border-radius: 0 10px 10px 0;
+      color: var(--muted);
+      background: #fff;
+    }
+    .btn-login {
+      background: var(--navy);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 12px;
+      font-weight: 600;
+      font-size: .95rem;
+      width: 100%;
+      transition: background .2s;
+    }
+    .btn-login:hover { background: var(--blue); color: #fff; }
+    .auth-link {
+      text-align: center;
+      margin-top: 20px;
+      font-size: .875rem;
+      color: var(--muted);
+    }
+    .auth-link a { color: var(--blue); font-weight: 600; text-decoration: none; }
+    .auth-link a:hover { text-decoration: underline; }
+    .alert { border-radius: 10px; border: none; font-size: .875rem; }
+    @media (max-width: 640px) {
+      .auth-panel { display: none; }
+      .auth-form-side { padding: 36px 24px; }
+    }
+  </style>
+</head>
+<body>
+<div class="auth-wrapper">
+
+  <!-- Panneau gauche -->
+  <div class="auth-panel">
+    <img src="{% static 'accounts/img/logo.jpg' %}" alt="Logo ENSPM"/>
+    <h2>MediCampus</h2>
+    <div class="auth-divider"></div>
+    <p>Plateforme de gestion des<br/>visites médicales  <br/>ENSPM Maroua</p>
+  </div>
+
+  <!-- Formulaire -->
+  <div class="auth-form-side">
+    <h3>Bienvenue</h3>
+    <p class="subtitle">Connectez-vous à votre espace personnel</p>
+
+    {% if messages %}
+      {% for message in messages %}
+      <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} mb-3">
+        {{ message }}
+      </div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="POST" novalidate>
+      {% csrf_token %}
+
+      <div class="mb-3">
+        <label class="form-label">Adresse email</label>
+        <input type="email" name="email" class="form-control {% if form.email.errors %}is-invalid{% endif %}"
+               placeholder="votre@email.com" value="{{ form.email.value|default:'' }}"/>
+        {% if form.email.errors %}
+        <div class="invalid-feedback">{{ form.email.errors.0 }}</div>
+        {% endif %}
+      </div>
+
+      <div class="mb-4">
+        <label class="form-label">Mot de passe</label>
+        <div class="input-group">
+          <input type="password" name="password" id="passwordField"
+                 class="form-control {% if form.password.errors %}is-invalid{% endif %}"
+                 placeholder="••••••••"/>
+          <button class="btn btn-outline-secondary" type="button" onclick="togglePassword()">
+            <i class="bi bi-eye" id="eyeIcon"></i>
+          </button>
+        </div>
+        {% if form.password.errors %}
+        <div class="text-danger small mt-1">{{ form.password.errors.0 }}</div>
+        {% endif %}
+      </div>
+
+      <button type="submit" class="btn btn-login">
+        <i class="bi bi-box-arrow-in-right me-2"></i>Se connecter
+      </button>
+    </form>
+
+    <div class="auth-link">
+      Pas encore de compte ?
+      <a href="{% url 'accounts:register' %}">Créer un compte</a>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+function togglePassword() {
+  const f = document.getElementById('passwordField');
+  const i = document.getElementById('eyeIcon');
+  if (f.type === 'password') {
+    f.type = 'text';
+    i.className = 'bi bi-eye-slash';
+  } else {
+    f.type = 'password';
+    i.className = 'bi bi-eye';
+  }
+}
+</script>
+</body>
+</html>

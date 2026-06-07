@@ -1,0 +1,49 @@
+{% extends 'accounts/base.html' %}
+{% block content %}
+<div class="container mt-4" style="max-width:800px">
+  <h2>Mes résultats médicaux</h2>
+  <p class="text-muted">Visite du {{ resultat.created_at|date:"d/m/Y" }}</p>
+
+  <div class="card mb-3">
+    <div class="card-header">Constantes</div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-3"><strong>Tension :</strong> {{ resultat.tension_arterielle|default:"—" }}</div>
+        <div class="col-md-3"><strong>Poids :</strong> {{ resultat.poids|default:"—" }} kg</div>
+        <div class="col-md-3"><strong>Taille :</strong> {{ resultat.taille|default:"—" }} cm</div>
+        <div class="col-md-3"><strong>IMC :</strong> {{ resultat.imc|default:"—" }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card mb-3">
+    <div class="card-header">Tests rapides</div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-3"><strong>Paludisme :</strong> {{ resultat.get_tdr_paludisme_display }}</div>
+        <div class="col-md-3"><strong>Typhoïde :</strong> {{ resultat.get_tdr_typhoide_display }}</div>
+        <div class="col-md-3"><strong>VIH :</strong> {{ resultat.get_tdr_vih_display }}</div>
+        <div class="col-md-3"><strong>Glycémie :</strong> {{ resultat.glycemie|default:"—" }} g/L</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card mb-3">
+    <div class="card-header">Conclusion</div>
+    <div class="card-body">
+      <p><strong>Aptitude :</strong>
+        <span class="badge 
+          {% if resultat.statut_aptitude == 'apte' %}bg-success
+          {% elif resultat.statut_aptitude == 'apte_avec_reserves' %}bg-warning
+          {% else %}bg-danger{% endif %}">
+          {{ resultat.get_statut_aptitude_display }}
+        </span>
+      </p>
+      <p><strong>Observations :</strong> {{ resultat.observations|default:"Aucune" }}</p>
+      <p><strong>Recommandations :</strong> {{ resultat.recommandations|default:"Aucune" }}</p>
+    </div>
+  </div>
+
+  <a href="{% url 'accounts:dashboard' %}" class="btn btn-secondary">Retour au tableau de bord</a>
+</div>
+{% endblock %}

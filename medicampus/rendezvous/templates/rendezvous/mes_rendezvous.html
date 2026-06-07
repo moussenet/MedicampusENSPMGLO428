@@ -1,0 +1,64 @@
+{% extends 'accounts/base.html' %}
+{% block title %}Mes rendez-vous{% endblock %}
+{% block page_title %}Mes rendez-vous{% endblock %}
+{% block content %}
+
+{% if messages %}
+  {% for msg in messages %}
+    <div class="alert alert-{{ msg.tags }}">{{ msg }}</div>
+  {% endfor %}
+{% endif %}
+
+{% if rdvs %}
+<table class="table table-bordered table-hover">
+  <thead class="table-dark">
+    <tr>
+      <th>Période</th>
+      <th>Date</th>
+      <th>Heure</th>
+      <th>Statut</th>
+      <th>Résultats</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for rdv in rdvs %}
+    <tr>
+      <td>{{ rdv.creneau.periode.titre }}</td>
+      <td>{{ rdv.creneau.date }}</td>
+      <td>{{ rdv.creneau.heure_debut }} – {{ rdv.creneau.heure_fin }}</td>
+      <td>
+        <span class="badge
+          {% if rdv.statut == 'present' %}bg-success
+          {% elif rdv.statut == 'absent' %}bg-danger
+          {% elif rdv.statut == 'annule' %}bg-secondary
+          {% else %}bg-primary{% endif %}">
+          {{ rdv.get_statut_display }}
+        </span>
+      </td>
+      <td>
+        {% if rdv.a_resultat %}
+          <a href="{% url 'resultats:detail_etudiant' rdv.resultat.pk %}" class="btn btn-sm btn-outline-success">
+            Voir / Télécharger
+          </a>
+        {% else %}
+          <span class="text-muted">—</span>
+        {% endif %}
+      </td>
+      <td>
+        {% if rdv.statut == 'confirme' %}
+          <form method="post" action="{% url 'rendezvous:annuler_rdv' rdv.pk %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-outline-danger">Annuler</button>
+          </form>
+        {% else %}—{% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+  <div class="alert alert-info">Vous n'avez aucun rendez-vous.</div>
+{% endif %}
+
+{% endblock %}

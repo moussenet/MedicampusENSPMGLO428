@@ -1,0 +1,54 @@
+{% extends 'accounts/base.html' %}
+{% block content %}
+<div class="container mt-4" style="max-width:700px">
+  <h2>Rapport général — {{ periode.titre }}</h2>
+  <p class="text-muted">{{ periode.date_debut }} au {{ periode.date_fin }} | {{ periode.departement }}</p>
+
+  {% if rapport %}
+  <div class="row text-center mb-4">
+    <div class="col-md-3">
+      <div class="card border-success">
+        <div class="card-body">
+          <h3>{{ rapport.nb_presents }}</h3>
+          <small>Présents</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-danger">
+        <div class="card-body">
+          <h3>{{ rapport.nb_absents }}</h3>
+          <small>Absents</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-primary">
+        <div class="card-body">
+          <h3>{{ rapport.nb_aptes }}</h3>
+          <small>Aptes</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-warning">
+        <div class="card-body">
+          <h3>{{ rapport.nb_inaptes }}</h3>
+          <small>Inaptes</small>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <form method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label class="form-label">Observations générales</label>
+      {{ form.observations_generales }}
+    </div>
+    <button type="submit" class="btn btn-primary">Enregistrer le rapport</button>
+    <a href="{% url 'resultats:rdv_du_jour' %}" class="btn btn-secondary">Retour</a>
+  </form>
+</div>
+{% endblock %}

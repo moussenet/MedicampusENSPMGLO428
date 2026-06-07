@@ -1,0 +1,129 @@
+{% extends 'accounts/base.html' %}
+{% load static %}
+
+{% block title %}Périodes de visite{% endblock %}
+{% block page_title %}Périodes de visite médicale{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <p class="text-muted mb-0" style="font-size:.875rem;">
+      Gérez les périodes de visites médicales par département
+    </p>
+  </div>
+  <a href="{% url 'periodes:creer' %}" class="btn btn-enspm px-4">
+    <i class="bi bi-plus-circle me-2"></i>Nouvelle période
+  </a>
+</div>
+
+<!-- Stats rapides -->
+<div class="row g-3 mb-4">
+  <div class="col-md-3">
+    <div class="stat-card">
+      <div class="stat-icon blue"><i class="bi bi-calendar3"></i></div>
+      <div>
+        <div class="stat-value">{{ periodes.count }}</div>
+        <div class="stat-label">Total périodes</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="stat-card">
+      <div class="stat-icon green"><i class="bi bi-play-circle"></i></div>
+      <div>
+        <div class="stat-value">{{ periodes|length }}</div>
+        <div class="stat-label">Programmées</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Tableau des périodes -->
+<div class="card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <span><i class="bi bi-calendar-range me-2"></i>Toutes les périodes</span>
+  </div>
+  <div class="card-body p-0">
+    {% if periodes %}
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr>
+          <th class="ps-4">Titre</th>
+          <th>Département</th>
+          <th>Dates</th>
+          <th>Horaires</th>
+          <th>Créneaux</th>
+          <th>Statut</th>
+          <th class="pe-4">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for periode in periodes %}
+        <tr>
+          <td class="ps-4 fw-500">{{ periode.titre }}</td>
+          <td>
+            <span class="badge bg-light text-dark border" style="font-size:.75rem;">
+              {{ periode.departement }}
+            </span>
+          </td>
+          <td style="font-size:.82rem;">
+            {{ periode.date_debut|date:"d/m/Y" }} →
+            {{ periode.date_fin|date:"d/m/Y" }}
+          </td>
+          <td style="font-size:.82rem;">
+            {{ periode.heure_debut|time:"H:i" }} – {{ periode.heure_fin|time:"H:i" }}
+          </td>
+          <td>
+            <span class="fw-600">{{ periode.creneaux.count }}</span>
+            <span class="text-muted" style="font-size:.78rem;">créneaux</span>
+          </td>
+          <td>
+            {% if periode.statut == 'programmee' %}
+              <span class="badge" style="background:#EBF2FF;color:#1A4A8A;font-size:.75rem;">Programmée</span>
+            {% elif periode.statut == 'en_cours' %}
+              <span class="badge" style="background:#E8F7F0;color:#1B8A5A;font-size:.75rem;">En cours</span>
+            {% elif periode.statut == 'terminee' %}
+              <span class="badge" style="background:#F1EFF8;color:#534AB7;font-size:.75rem;">Terminée</span>
+            {% else %}
+              <span class="badge" style="background:#FEF0EE;color:#C0392B;font-size:.75rem;">Annulée</span>
+            {% endif %}
+          </td>
+          <td class="pe-4">
+            <a href="{% url 'periodes:detail' periode.pk %}"
+               class="btn btn-sm btn-outline-secondary me-1" title="Voir">
+              <i class="bi bi-eye"></i>
+            </a>
+            <a href="{% url 'periodes:modifier' periode.pk %}"
+               class="btn btn-sm btn-outline-primary me-1" title="Modifier">
+              <i class="bi bi-pencil"></i>
+            </a>
+            <a href="{% url 'periodes:supprimer' periode.pk %}"
+               class="btn btn-sm btn-outline-danger" title="Supprimer">
+              <i class="bi bi-trash"></i>
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="text-center py-5">
+      <i class="bi bi-calendar-x" style="font-size:2.5rem;color:#DDE3EE;"></i>
+      <p class="text-muted mt-3 mb-1">Aucune période programmée pour le moment.</p>
+      <a href="{% url 'periodes:creer' %}" class="btn btn-enspm btn-sm mt-2">
+        <i class="bi bi-plus me-1"></i>Créer la première période
+      </a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% block extra_css %}
+<style>
+  .fw-500 { font-weight: 500; }
+  .fw-600 { font-weight: 600; }
+</style>
+{% endblock %}
+
+{% endblock %}

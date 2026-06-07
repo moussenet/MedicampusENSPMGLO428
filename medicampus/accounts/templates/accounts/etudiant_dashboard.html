@@ -1,0 +1,116 @@
+@"
+{% extends 'accounts/base.html' %}
+{% block title %}Espace Étudiant{% endblock %}
+{% block page_title %}Espace Étudiant{% endblock %}
+{% block content %}
+
+{% if messages %}
+  {% for msg in messages %}
+    <div class="alert alert-{{ msg.tags }}">{{ msg }}</div>
+  {% endfor %}
+{% endif %}
+
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="card text-center border-primary">
+      <div class="card-body">
+        <h3 class="text-primary">{{ rdvs.count }}</h3>
+        <small>Mes rendez-vous</small>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card text-center border-success">
+      <div class="card-body">
+        <h3 class="text-success">{{ resultats.count }}</h3>
+        <small>Résultats disponibles</small>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card text-center border-warning">
+      <div class="card-body">
+        <h3 class="text-warning">{{ nb_non_lues }}</h3>
+        <small>Notifications non lues</small>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-6">
+    <a href="{% url 'rendezvous:periodes_disponibles' %}" class="btn btn-primary w-100">
+      <i class="bi bi-calendar-plus"></i> Prendre un rendez-vous
+    </a>
+  </div>
+  <div class="col-md-6">
+    <a href="{% url 'rendezvous:mes_rendezvous' %}" class="btn btn-outline-primary w-100">
+      <i class="bi bi-calendar-check"></i> Mes rendez-vous
+    </a>
+  </div>
+</div>
+
+<div class="card mb-4">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <strong>Mes derniers rendez-vous</strong>
+    <a href="{% url 'rendezvous:mes_rendezvous' %}" class="btn btn-sm btn-outline-primary">Voir tout</a>
+  </div>
+  <div class="card-body p-0">
+    {% if rdvs %}
+    <table class="table table-hover mb-0">
+      <thead class="table-light">
+        <tr><th>Période</th><th>Date</th><th>Heure</th><th>Statut</th><th>Résultats</th></tr>
+      </thead>
+      <tbody>
+        {% for rdv in rdvs %}
+        <tr>
+          <td>{{ rdv.creneau.periode.titre }}</td>
+          <td>{{ rdv.creneau.date }}</td>
+          <td>{{ rdv.creneau.heure_debut }}</td>
+          <td>
+            <span class="badge {% if rdv.statut == 'present' %}bg-success{% elif rdv.statut == 'absent' %}bg-danger{% elif rdv.statut == 'annule' %}bg-secondary{% else %}bg-primary{% endif %}">
+              {{ rdv.get_statut_display }}
+            </span>
+          </td>
+          <td>
+            {% if rdv.a_resultat %}
+              <a href="{% url 'resultats:detail_etudiant' rdv.resultat.pk %}" class="btn btn-sm btn-success">Voir</a>
+            {% else %}—{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+      <p class="text-muted p-3 mb-0">Aucun rendez-vous.</p>
+    {% endif %}
+  </div>
+</div>
+
+<div class="card mb-4">
+  <div class="card-header">
+    <strong>Notifications</strong>
+    {% if nb_non_lues %}<span class="badge bg-danger ms-2">{{ nb_non_lues }}</span>{% endif %}
+  </div>
+  <div class="card-body p-0">
+    {% if notifications %}
+    <ul class="list-group list-group-flush">
+      {% for notif in notifications %}
+      <li class="list-group-item {% if not notif.lu %}fw-bold{% endif %}">
+        <small class="text-muted float-end">{{ notif.created_at|date:"d/m/Y H:i" }}</small>
+        <span class="badge {% if notif.type == 'resultat_disponible' %}bg-success{% elif notif.type == 'rappel_rdv' %}bg-primary{% else %}bg-secondary{% endif %} me-2">
+          {{ notif.get_type_display }}
+        </span>
+        {{ notif.titre }}
+        <p class="mb-0 text-muted"><small>{{ notif.message }}</small></p>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+      <p class="text-muted p-3 mb-0">Aucune notification.</p>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}
+"@ | Set-Content "C:\xampp\htdocs\MedicampusENSPMGLO428\medicampus\accounts\templates\accounts\etudiant_dashboard.html" -Encoding UTF8
