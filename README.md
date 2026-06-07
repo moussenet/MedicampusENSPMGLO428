@@ -276,7 +276,7 @@ Accéder à l'application : [http://127.0.0.1:8000](http://127.0.0.1:8000)
 | Super-admin | superadmin@medicampus.cm | (défini à la création) |
 | Administrateur | admin@enspm.cm | (défini par le superadmin) |
 | Médecin | medecin@enspm.cm | (défini par le superadmin) |
-| Étudiant | etudiant@enspm.cm | (auto-inscription) |
+| Étudiant | etudiant@gmail.com | (auto-inscription) |
 
 > Les étudiants s'inscrivent eux-mêmes via `/accounts/register/`
 
